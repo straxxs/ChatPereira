@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, redirect, session
 from config import Config
 from modules.auth import auth_bp
 from modules.consultas import consultas_bp
@@ -27,7 +27,27 @@ def create_app():
 
     @app.get("/")
     def index():
-        return jsonify({"sistema": "Instituto Pirovano", "estado": "ok"})
+        return render_template("index.html")
+
+    @app.get("/login")
+    def login_page():
+        return render_template("login.html")
+
+    @app.get("/registro")
+    def registro_page():
+        return render_template("registro.html")
+
+    @app.get("/paciente-dashboard")
+    def paciente_dashboard():
+        return render_template("paciente_dashboard.html")
+
+    @app.get("/medico-dashboard")
+    def medico_dashboard():
+        return render_template("medico_dashboard.html")
+
+    @app.get("/admin-dashboard")
+    def admin_dashboard():
+        return render_template("admin_dashboard.html")
 
     return app
 
