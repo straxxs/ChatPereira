@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Panel médico | Instituto Pirovano{% endblock %}
+{% block content %}
+<main class="dashboard container">
+  <div class="page-head"><div><span class="eyebrow">Panel médico</span><h1>Consultas pendientes</h1><p>Revisá, respondé y derivá las consultas que necesiten atención presencial.</p></div><button class="btn btn-outline" onclick="logout()">Cerrar sesión</button></div>
+  <section class="panel"><div id="medicoConsultas" class="doctor-list">Cargando...</div></section>
+  <section class="panel"><div class="panel-head"><div><h2>Generar receta</h2><p>La receta se puede asociar desde la devolución.</p></div></div><form id="recetaForm" class="form-grid form-grid-2"><label>Medicamentos<input name="medicamentos" required placeholder="Ej.: medicamento A, medicamento B"></label><label>Descripción<input name="descripcion" placeholder="Indicaciones generales"></label><button class="btn btn-primary" type="submit">Guardar receta</button><div id="recetaMessage" class="form-message"></div></form></section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/medico.js') }}"></script>{% endblock %}

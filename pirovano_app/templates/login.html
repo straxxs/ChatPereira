@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión | Instituto Pirovano{% endblock %}
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card">
+    <div class="auth-header"><span class="eyebrow">Acceso seguro</span><h1>Iniciar sesión</h1><p>Ingresá con el mail registrado en el sistema.</p></div>
+    <form id="loginForm" class="form-grid">
+      <label>Mail<input name="mail" type="email" required placeholder="nombre@correo.com"></label>
+      <label>Contraseña<input name="password" type="password" required placeholder="••••••••"></label>
+      <button class="btn btn-primary btn-lg" type="submit">Ingresar</button>
+      <div id="formMessage" class="form-message"></div>
+    </form>
+    <p class="auth-footer">¿No tenés cuenta? <a href="/registro">Registrate como paciente</a></p>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/auth.js') }}"></script>{% endblock %}

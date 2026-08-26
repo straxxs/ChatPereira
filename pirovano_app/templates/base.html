@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Instituto Pirovano{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">P</span>
+      <span><strong>Instituto Pirovano</strong><small>Atención médica digital</small></span>
+    </a>
+    <nav class="top-actions">
+      <a class="btn btn-outline" href="/login">Iniciar sesión</a>
+      <a class="btn btn-primary" href="/registro">Registrarme</a>
+    </nav>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="footer">
+    <span>Instituto Pirovano</span>
+    <span>Primera versión académica del sistema</span>
+  </footer>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

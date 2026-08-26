@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Registro | Instituto Pirovano{% endblock %}
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card auth-card-wide">
+    <div class="auth-header"><span class="eyebrow">Nuevo paciente</span><h1>Crear cuenta</h1><p>Completá tus datos para empezar a realizar consultas.</p></div>
+    <form id="registerForm" class="form-grid form-grid-2">
+      <label>Nombre<input name="nombre_usuario" required></label>
+      <label>Apellido<input name="apellido_usuario" required></label>
+      <label>Mail<input name="mail" type="email" required></label>
+      <label>DNI<input name="DNI" required></label>
+      <label>Contraseña<input name="password" type="password" minlength="6" required></label>
+      <label>Sexo<select name="sexo" required><option value="">Seleccionar</option><option value="M">M</option><option value="F">F</option><option value="X">X</option></select></label>
+      <label>Edad<input name="edad" type="number" min="0" max="120" required></label>
+      <label>Teléfono<input name="telefono"></label>
+      <label class="full">Historial básico de salud<textarea name="historial_salud" rows="4" placeholder="Alergias, antecedentes u otra información relevante"></textarea></label>
+      <button class="btn btn-primary btn-lg full" type="submit">Crear cuenta</button>
+      <div id="formMessage" class="form-message full"></div>
+    </form>
+    <p class="auth-footer">¿Ya tenés cuenta? <a href="/login">Iniciar sesión</a></p>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/register.js') }}"></script>{% endblock %}

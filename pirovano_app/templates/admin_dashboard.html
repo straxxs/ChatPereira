@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Administración | Instituto Pirovano{% endblock %}
+{% block content %}
+<main class="dashboard container">
+  <div class="page-head"><div><span class="eyebrow">Administración</span><h1>Usuarios del sistema</h1><p>Supervisá las cuentas registradas en el sistema.</p></div><button class="btn btn-outline" onclick="logout()">Cerrar sesión</button></div>
+  <section class="panel"><div class="panel-head"><div><h2>Listado de usuarios</h2><p>Primera vista del panel administrativo.</p></div></div><div id="usuariosList" class="table-wrap">Cargando...</div></section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}"></script>{% endblock %}
