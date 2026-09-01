@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, render_template, redirect, session
+from flask import Flask, render_template, session, redirect, url_for
 from config import Config
-from modules.auth import auth_bp
+from modules.auth import auth_bp, page_login_required
 from modules.consultas import consultas_bp
 from modules.medicos import medicos_bp
 from modules.pacientes import pacientes_bp
@@ -31,21 +31,34 @@ def create_app():
 
     @app.get("/login")
     def login_page():
+        if session.get("user_id"):
+            destino = {
+                "paciente": "paciente_dashboard",
+                "medico": "medico_dashboard",
+                "admin": "admin_dashboard",
+            }.get(session.get("rol"))
+            if destino:
+                return redirect(url_for(destino))
         return render_template("login.html")
 
     @app.get("/registro")
     def registro_page():
+        if session.get("user_id"):
+            return redirect(url_for("index"))
         return render_template("registro.html")
 
     @app.get("/paciente-dashboard")
+    @page_login_required(["paciente"])
     def paciente_dashboard():
         return render_template("paciente_dashboard.html")
 
     @app.get("/medico-dashboard")
+    @page_login_required(["medico"])
     def medico_dashboard():
         return render_template("medico_dashboard.html")
 
     @app.get("/admin-dashboard")
+    @page_login_required(["admin"])
     def admin_dashboard():
         return render_template("admin_dashboard.html")
 

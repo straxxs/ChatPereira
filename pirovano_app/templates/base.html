@@ -16,8 +16,14 @@
       <span><strong>Instituto Pirovano</strong><small>Atención médica digital</small></span>
     </a>
     <nav class="top-actions">
-      <a class="btn btn-outline" href="/login">Iniciar sesión</a>
-      <a class="btn btn-primary" href="/registro">Registrarme</a>
+      {% if session.get("user_id") %}
+        <span class="session-greeting">Hola, <strong>{{ session.get("nombre_usuario") }}</strong></span>
+        <span class="role-pill">{{ session.get("rol")|capitalize }}</span>
+        <button class="btn btn-outline" type="button" onclick="logout()">Cerrar sesión</button>
+      {% else %}
+        <a class="btn btn-outline" href="/login">Iniciar sesión</a>
+        <a class="btn btn-primary" href="/registro">Registrarme</a>
+      {% endif %}
     </nav>
   </header>
 

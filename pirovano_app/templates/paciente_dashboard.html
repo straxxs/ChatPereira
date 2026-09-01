@@ -1,13 +1,54 @@
 {% extends 'base.html' %}
-{% block title %}Panel del paciente | Instituto Pirovano{% endblock %}
+{% block title %}Mi atención | Instituto Pirovano{% endblock %}
 {% block content %}
 <main class="dashboard container">
-  <div class="page-head"><div><span class="eyebrow">Panel del paciente</span><h1>Hola, paciente</h1><p>Gestioná tus consultas médicas desde acá.</p></div><button class="btn btn-outline" onclick="logout()">Cerrar sesión</button></div>
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Atención médica digital</span>
+      <h1>Mis conversaciones</h1>
+      <p>Enviá una consulta y seguí la respuesta del médico desde un mismo lugar.</p>
+    </div>
+  </div>
+
   <section class="dashboard-grid">
-    <article class="panel panel-large"><div class="panel-head"><div><h2>Nueva consulta</h2><p>Elegí un médico y explicá tu situación.</p></div></div><form id="consultaForm" class="form-grid"><label>Médico<select name="id_medico" id="medicoSelect" required></select></label><label>Descripción de síntomas<textarea name="descripcion_sintomas" rows="6" required placeholder="Contá qué te pasa, desde cuándo y cualquier dato que consideres importante"></textarea></label><button class="btn btn-primary" type="submit">Enviar consulta</button><div id="consultaMessage" class="form-message"></div></form></article>
-    <article class="panel"><div class="panel-head"><div><h2>Mi perfil</h2><p>Información personal básica.</p></div></div><div id="perfilBox" class="profile-box">Cargando...</div></article>
+    <article class="panel panel-large">
+      <div class="panel-head"><div><h2>Nueva consulta</h2><p>Elegí el médico y contale qué necesitás consultar.</p></div></div>
+      <form id="consultaForm" class="form-grid" enctype="multipart/form-data">
+        <label>Médico<select name="id_medico" id="medicoSelect" required></select></label>
+        <label>Mensaje<textarea name="descripcion_sintomas" rows="6" required placeholder="Contá qué te pasa, desde cuándo y cualquier dato importante..."></textarea></label>
+        <label class="file-field">Adjuntar imagen (opcional)<input type="file" name="imagen" id="consultaImagen" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+        <div id="consultaPreview" class="image-preview hidden"></div>
+        <button class="btn btn-primary" type="submit">Iniciar consulta</button>
+        <div id="consultaMessage" class="form-message"></div>
+      </form>
+    </article>
+    <article class="panel">
+      <div class="panel-head"><div><h2>Mi perfil</h2><p>Información personal básica.</p></div></div>
+      <div id="perfilBox" class="profile-box">Cargando...</div>
+    </article>
   </section>
-  <section class="panel"><div class="panel-head"><div><h2>Mis consultas</h2><p>Estado y fecha de cada consulta.</p></div></div><div id="consultasList" class="table-wrap">Cargando...</div></section>
+
+  <section class="panel">
+    <div class="panel-head"><div><h2>Conversaciones</h2><p>Entrá a una consulta para ver los mensajes.</p></div></div>
+    <div id="consultasList" class="conversation-list">Cargando...</div>
+  </section>
+
+  <section id="chatPanel" class="panel chat-panel hidden">
+    <div class="chat-head">
+      <div><button id="closeChat" class="back-button">← Volver</button><h2 id="chatTitle">Consulta</h2><p id="chatSubtitle"></p></div>
+      <span id="chatStatus" class="badge"></span>
+    </div>
+    <div id="chatMessages" class="chat-messages"></div>
+    <form id="messageForm" class="chat-composer" enctype="multipart/form-data">
+      <textarea name="contenido" id="messageText" rows="2" placeholder="Escribí un mensaje..."></textarea>
+      <div class="composer-row">
+        <label class="attach-button">📎 Adjuntar imagen<input type="file" name="imagen" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+        <span id="messageFileName" class="file-name"></span>
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </div>
+      <div id="messageError" class="form-message"></div>
+    </form>
+  </section>
 </main>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='js/paciente.js') }}"></script>{% endblock %}

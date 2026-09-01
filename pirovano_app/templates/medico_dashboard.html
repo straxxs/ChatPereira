@@ -2,9 +2,33 @@
 {% block title %}Panel médico | Instituto Pirovano{% endblock %}
 {% block content %}
 <main class="dashboard container">
-  <div class="page-head"><div><span class="eyebrow">Panel médico</span><h1>Consultas pendientes</h1><p>Revisá, respondé y derivá las consultas que necesiten atención presencial.</p></div><button class="btn btn-outline" onclick="logout()">Cerrar sesión</button></div>
-  <section class="panel"><div id="medicoConsultas" class="doctor-list">Cargando...</div></section>
-  <section class="panel"><div class="panel-head"><div><h2>Generar receta</h2><p>La receta se puede asociar desde la devolución.</p></div></div><form id="recetaForm" class="form-grid form-grid-2"><label>Medicamentos<input name="medicamentos" required placeholder="Ej.: medicamento A, medicamento B"></label><label>Descripción<input name="descripcion" placeholder="Indicaciones generales"></label><button class="btn btn-primary" type="submit">Guardar receta</button><div id="recetaMessage" class="form-message"></div></form></section>
+  <div class="page-head"><div><span class="eyebrow">Panel médico</span><h1>Conversaciones pendientes</h1><p>Respondé a tus pacientes y mantené el seguimiento de cada consulta.</p></div></div>
+
+  <section class="panel">
+    <div id="medicoConsultas" class="doctor-list">Cargando...</div>
+  </section>
+
+  <section id="doctorChatPanel" class="panel chat-panel hidden">
+    <div class="chat-head">
+      <div><button id="closeDoctorChat" class="back-button">← Volver</button><h2 id="doctorChatTitle">Consulta</h2><p id="doctorChatSubtitle"></p></div>
+      <span id="doctorChatStatus" class="badge"></span>
+    </div>
+    <div id="doctorChatMessages" class="chat-messages"></div>
+    <form id="doctorReplyForm" class="chat-composer" enctype="multipart/form-data">
+      <textarea name="descripcion" id="doctorMessageText" rows="2" placeholder="Escribí la respuesta para el paciente..."></textarea>
+      <input type="text" name="turno" id="doctorTurno" placeholder="Turno presencial (opcional)">
+      <div class="composer-row">
+        <label class="attach-button">📎 Adjuntar imagen<input type="file" name="imagen" id="doctorImage" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+        <button class="btn btn-primary" type="submit">Enviar respuesta</button>
+      </div>
+      <div id="doctorMessageError" class="form-message"></div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div><h2>Generar receta</h2><p>Podés crearla y asociarla desde la respuesta médica.</p></div></div>
+    <form id="recetaForm" class="form-grid form-grid-2"><label>Medicamentos<input name="medicamentos" required placeholder="Ej.: medicamento A, medicamento B"></label><label>Descripción<input name="descripcion" placeholder="Indicaciones generales"></label><label>Teléfono<input name="telefono" placeholder="Contacto del paciente"></label><button class="btn btn-primary" type="submit">Guardar receta</button><div id="recetaMessage" class="form-message"></div></form>
+  </section>
 </main>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='js/medico.js') }}"></script>{% endblock %}
