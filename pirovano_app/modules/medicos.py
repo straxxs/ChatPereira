@@ -28,3 +28,4 @@ def listar_medicos():
 @login_required(["medico"])
 def mis_consultas():
     return {"ok": True, "mensaje": "Usar /consultas/pendientes para la bandeja de consultas."}
+

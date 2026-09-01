@@ -17,17 +17,15 @@
     <form id="doctorReplyForm" class="chat-composer" enctype="multipart/form-data">
       <textarea name="descripcion" id="doctorMessageText" rows="2" placeholder="Escribí la respuesta para el paciente..."></textarea>
       <input type="text" name="turno" id="doctorTurno" placeholder="Turno presencial (opcional)">
+      <input type="text" name="medicamentos" id="doctorMedicamentos" placeholder="Receta: medicamentos (opcional)">
+      <input type="text" name="indicaciones_receta" id="doctorIndicaciones" placeholder="Indicaciones de la receta (opcional)">
       <div class="composer-row">
         <label class="attach-button">📎 Adjuntar imagen<input type="file" name="imagen" id="doctorImage" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+        <button class="btn btn-outline" type="button" id="finalizarBtn">Finalizar consulta</button>
         <button class="btn btn-primary" type="submit">Enviar respuesta</button>
       </div>
       <div id="doctorMessageError" class="form-message"></div>
     </form>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head"><div><h2>Generar receta</h2><p>Podés crearla y asociarla desde la respuesta médica.</p></div></div>
-    <form id="recetaForm" class="form-grid form-grid-2"><label>Medicamentos<input name="medicamentos" required placeholder="Ej.: medicamento A, medicamento B"></label><label>Descripción<input name="descripcion" placeholder="Indicaciones generales"></label><label>Teléfono<input name="telefono" placeholder="Contacto del paciente"></label><button class="btn btn-primary" type="submit">Guardar receta</button><div id="recetaMessage" class="form-message"></div></form>
   </section>
 </main>
 {% endblock %}

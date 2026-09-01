@@ -54,6 +54,11 @@ function renderConsultas() {
 }
 
 async function openPatientChat(id) {
+  if (currentChatId === id) {
+    currentChatId = null;
+    document.getElementById('chatPanel').classList.add('hidden');
+    return;
+  }
   const consulta = consultasCache.find(c => c.id_consulta === id);
   if (!consulta) return;
   currentChatId = id;
@@ -61,6 +66,7 @@ async function openPatientChat(id) {
   document.getElementById('chatTitle').textContent = consulta.medico_nombre;
   document.getElementById('chatSubtitle').textContent = consulta.especialidad;
   setStatusBadge(document.getElementById('chatStatus'), consulta.estado);
+  document.getElementById('messageForm').querySelectorAll('textarea, input, button').forEach(el => el.disabled = consulta.estado === 'Finalizada');
   await loadMessages('/consultas/' + id + '/mensajes', 'chatMessages');
   document.getElementById('chatPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -75,18 +81,24 @@ document.getElementById('consultaImagen')?.addEventListener('change', event => {
   const preview = document.getElementById('consultaPreview');
   if (!file) { preview.classList.add('hidden'); preview.innerHTML = ''; return; }
   preview.classList.remove('hidden');
-  preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Vista previa de la imagen adjunta"><span>${escapeHtml(file.name)}</span>`;
+  preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Vista previa"><span>${escapeHtml(file.name)}</span> <button type="button" id="removeConsultaImagen" class="btn btn-outline">Quitar</button>`;
+  document.getElementById('removeConsultaImagen').addEventListener('click', () => {
+    event.target.value = '';
+    preview.classList.add('hidden');
+    preview.innerHTML = '';
+  });
 });
 
 document.getElementById('messageForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   if (!currentChatId) return;
-  const formData = new FormData(e.currentTarget);
+  const form = e.currentTarget;
+  const formData = new FormData(form);
   const r = await fetch(`/consultas/${currentChatId}/mensajes`, { method: 'POST', body: formData });
   const j = await r.json();
   const error = document.getElementById('messageError');
   if (!r.ok) { showMessage(error, j.mensaje || 'No se pudo enviar el mensaje'); return; }
-  e.currentTarget.reset();
+  form.reset();
   document.getElementById('messageFileName').textContent = '';
   showMessage(error, 'Enviado', 'ok');
   await loadMessages(`/consultas/${currentChatId}/mensajes`, 'chatMessages');
@@ -102,13 +114,14 @@ document.querySelector('#messageForm input[type="file"]')?.addEventListener('cha
 
 document.getElementById('consultaForm')?.addEventListener('submit', async e => {
   e.preventDefault();
-  const formData = new FormData(e.currentTarget);
+  const form = e.currentTarget;
+  const formData = new FormData(form);
   const r = await fetch('/consultas', { method: 'POST', body: formData });
   const j = await r.json();
   const msg = document.getElementById('consultaMessage');
   if (!r.ok) { showMessage(msg, j.mensaje || 'No se pudo crear la consulta'); return; }
   showMessage(msg, 'Consulta iniciada correctamente.', 'ok');
-  e.currentTarget.reset();
+  form.reset();
   document.getElementById('consultaPreview').classList.add('hidden');
   setTimeout(loadPaciente, 250);
 });
@@ -119,6 +132,15 @@ async function loadMessages(url, targetId) {
   const r = await fetch(url);
   if (!r.ok) { box.innerHTML = '<div class="empty">No se pudo cargar la conversación.</div>'; return; }
   const messages = await r.json();
+  box.innerHTML = messages.length ? messages.map(renderMessage).join('') : '<div class="empty">No hay mensajes todavía.</div>';
+  box.scrollTop = box.scrollHeight;
+}
+
+async function silentRefreshMessages(url, targetId) {
+  const r = await fetch(url);
+  if (!r.ok) return;
+  const messages = await r.json();
+  const box = document.getElementById(targetId);
   box.innerHTML = messages.length ? messages.map(renderMessage).join('') : '<div class="empty">No hay mensajes todavía.</div>';
   box.scrollTop = box.scrollHeight;
 }
@@ -147,4 +169,17 @@ function setStatusBadge(el, value) {
   el.className = 'badge badge-' + String(value).toLowerCase().replaceAll(' ', '_');
 }
 
+async function refreshPatientView() {
+  await loadPaciente();
+  if (currentChatId) {
+    await silentRefreshMessages(`/consultas/${currentChatId}/mensajes`, 'chatMessages');
+    const fresh = consultasCache.find(c => c.id_consulta === currentChatId);
+    if (fresh) {
+      setStatusBadge(document.getElementById('chatStatus'), fresh.estado);
+      document.getElementById('messageForm').querySelectorAll('textarea, input, button').forEach(el => el.disabled = fresh.estado === 'Finalizada');
+    }
+  }
+}
+
 loadPaciente();
+setInterval(refreshPatientView, 1500);
