@@ -12,7 +12,7 @@ async function loadMedico() {
 function renderDoctorList() {
   const box = document.getElementById('medicoConsultas');
   box.innerHTML = medicoConsultasCache.length ? medicoConsultasCache.map(c => `
-    <button class="doctor-item doctor-item-button" type="button" onclick="openDoctorChat(${c.id_consulta})">
+    <button class="doctor-item doctor-item-button${c.id_consulta === currentDoctorChatId ? ' active' : ''}" type="button" onclick="openDoctorChat(${c.id_consulta})">
       <div class="conversation-avatar">${escapeHtml((c.paciente_nombre || 'P').charAt(0).toUpperCase())}</div>
       <div class="doctor-item-content">
         <div class="conversation-top"><h3>${escapeHtml(c.paciente_nombre)}</h3><span>${formatDoctorDate(c.ultimo_mensaje_fecha || c.fecha_hora)}</span></div>

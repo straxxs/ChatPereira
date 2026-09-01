@@ -10,9 +10,12 @@ async function loadPaciente() {
 
   if (medRes.ok) {
     const meds = await medRes.json();
-    document.getElementById('medicoSelect').innerHTML =
+    const select = document.getElementById('medicoSelect');
+    const valorActual = select.value;
+    select.innerHTML =
       '<option value="">Seleccionar médico</option>' +
       meds.map(m => `<option value="${m.id_medico}">${escapeHtml(m.apellido_usuario)}, ${escapeHtml(m.nombre_usuario)} — ${escapeHtml(m.especialidad)}</option>`).join('');
+    select.value = valorActual;
   }
 
   if (perfRes.ok) {
@@ -39,7 +42,7 @@ function renderConsultas() {
   }
 
   box.innerHTML = consultasCache.map(c => `
-    <button class="conversation-card" type="button" onclick="openPatientChat(${c.id_consulta})">
+    <button class="conversation-card${c.id_consulta === currentChatId ? ' active' : ''}" type="button" onclick="openPatientChat(${c.id_consulta})">
       <div class="conversation-avatar">${escapeHtml((c.medico_nombre || 'M').charAt(0).toUpperCase())}</div>
       <div class="conversation-main">
         <div class="conversation-top"><strong>${escapeHtml(c.medico_nombre)}</strong><span>${formatDate(c.fecha_hora)}</span></div>

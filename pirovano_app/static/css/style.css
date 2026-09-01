@@ -219,3 +219,4 @@ button,input,select,textarea{
 @media(max-width:600px){.conversation-side{display:none}.conversation-top{align-items:flex-start}.message-bubble{max-width:88%}.chat-messages{height:55vh;padding:16px}.composer-row{flex-wrap:wrap}.composer-row .btn{margin-left:0}.chat-head{padding:16px}.doctor-item-button .badge{display:none}}
 
 .badge-finalizada{background:#e5e7eb;color:#4b5563}
+.conversation-card.active,.doctor-item-button.active{border-color:var(--primary);background:#f5f9ff;box-shadow:0 0 0 2px var(--primary)}
