@@ -29,7 +29,7 @@ def upload_chat_image(file):
 
 def user_can_access_consulta(cur, id_consulta):
     cur.execute(
-        """SELECT c.id_consulta, c.id_paciente, c.id_medico
+        """SELECT c.id_consulta, c.id_paciente, c.id_medico, c.estado
            FROM CONSULTA c
            WHERE c.id_consulta=%s""",
         (id_consulta,),
@@ -201,8 +201,7 @@ def enviar_mensaje(id_consulta):
                 (id_consulta, session["user_id"], tipo, contenido or None, image_name),
             )
 
-            if tipo == "paciente":
-                # El mensaje del paciente vuelve a poner el caso en revisión.
+            if tipo == "paciente" and consulta["estado"] != "Finalizada":
                 cur.execute(
                     "UPDATE CONSULTA SET estado='En Revision' WHERE id_consulta=%s",
                     (id_consulta,),

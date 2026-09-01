@@ -28,6 +28,11 @@ function renderDoctorList() {
 }
 
 async function openDoctorChat(id) {
+  if (currentDoctorChatId === id) {
+    currentDoctorChatId = null;
+    document.getElementById('doctorChatPanel').classList.add('hidden');
+    return;
+  }
   const consulta = medicoConsultasCache.find(c => c.id_consulta === id);
   if (!consulta) return;
   currentDoctorChatId = id;
@@ -35,6 +40,7 @@ async function openDoctorChat(id) {
   document.getElementById('doctorChatTitle').textContent = consulta.paciente_nombre;
   document.getElementById('doctorChatSubtitle').textContent = `Consulta #${consulta.id_consulta}`;
   setStatusBadge(document.getElementById('doctorChatStatus'), consulta.estado);
+  document.getElementById('doctorReplyForm').querySelectorAll('textarea, input, button').forEach(el => el.disabled = consulta.estado === 'Finalizada');
   await loadDoctorMessages(id);
   document.getElementById('doctorChatPanel').scrollIntoView({ behavior:'smooth', block:'start' });
 }
@@ -47,16 +53,29 @@ document.getElementById('closeDoctorChat')?.addEventListener('click', () => {
 document.getElementById('doctorReplyForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   if (!currentDoctorChatId) return;
-  const formData = new FormData(e.currentTarget);
+  const form = e.currentTarget;
+  const formData = new FormData(form);
   const r = await fetch(`/devoluciones/${currentDoctorChatId}`, { method:'POST', body: formData });
   const j = await r.json();
   const error = document.getElementById('doctorMessageError');
   if (!r.ok) { showMessage(error, j.mensaje || 'No se pudo enviar la respuesta'); return; }
-  e.currentTarget.reset();
+  form.reset();
   showMessage(error, 'Respuesta enviada.', 'ok');
   await loadDoctorMessages(currentDoctorChatId);
   await loadMedico();
   setTimeout(() => showMessage(error, ''), 1200);
+});
+
+document.getElementById('finalizarBtn')?.addEventListener('click', async () => {
+  if (!currentDoctorChatId) return;
+  if (!confirm('¿Finalizar esta consulta? El paciente no podrá reabrirla.')) return;
+  const r = await fetch(`/devoluciones/${currentDoctorChatId}/finalizar`, { method: 'POST' });
+  const j = await r.json();
+  if (!r.ok) { alert(j.mensaje || 'No se pudo finalizar'); return; }
+  await loadMedico();
+  await loadDoctorMessages(currentDoctorChatId);
+  const current = medicoConsultasCache.find(c => c.id_consulta === currentDoctorChatId);
+  if (current) setStatusBadge(document.getElementById('doctorChatStatus'), current.estado);
 });
 
 async function loadDoctorMessages(id) {
@@ -65,6 +84,15 @@ async function loadDoctorMessages(id) {
   const r = await fetch(`/consultas/${id}/mensajes`);
   if (!r.ok) { box.innerHTML = '<div class="empty">No se pudo cargar la conversación.</div>'; return; }
   const messages = await r.json();
+  box.innerHTML = messages.length ? messages.map(m => renderDoctorMessage(m)).join('') : '<div class="empty">No hay mensajes todavía.</div>';
+  box.scrollTop = box.scrollHeight;
+}
+
+async function silentRefreshMessages(url, targetId) {
+  const r = await fetch(url);
+  if (!r.ok) return;
+  const messages = await r.json();
+  const box = document.getElementById(targetId);
   box.innerHTML = messages.length ? messages.map(m => renderDoctorMessage(m)).join('') : '<div class="empty">No hay mensajes todavía.</div>';
   box.scrollTop = box.scrollHeight;
 }
@@ -89,26 +117,18 @@ function setStatusBadge(el, value) {
   el.className = 'badge badge-' + String(value).toLowerCase().replaceAll(' ', '_');
 }
 
-let lastDoctorMessageSignature = '';
-
 async function refreshDoctorView() {
   await loadMedico();
   if (currentDoctorChatId) {
-    await loadDoctorMessages(currentDoctorChatId);
+    await silentRefreshMessages(`/consultas/${currentDoctorChatId}/mensajes`, 'doctorChatMessages');
     const current = medicoConsultasCache.find(c => c.id_consulta === currentDoctorChatId);
-    if (current) setStatusBadge(document.getElementById('doctorChatStatus'), current.estado);
+    if (current) {
+      setStatusBadge(document.getElementById('doctorChatStatus'), current.estado);
+      document.getElementById('doctorReplyForm').querySelectorAll('textarea, input, button').forEach(el => el.disabled = current.estado === 'Finalizada');
+    }
   }
 }
 
-setInterval(refreshDoctorView, 5000);
-
-document.getElementById('recetaForm')?.addEventListener('submit', async e => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.currentTarget));
-  const r = await fetch('/recetas', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-  const j = await r.json();
-  showMessage(document.getElementById('recetaMessage'), j.ok ? 'Receta guardada correctamente.' : j.mensaje, j.ok ? 'ok' : 'error');
-  if (r.ok) e.currentTarget.reset();
-});
+setInterval(refreshDoctorView, 1500);
 
 loadMedico();
