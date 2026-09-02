@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS CONSULTA (
     descripcion_sintomas TEXT NOT NULL,
     fecha_hora DATETIME NOT NULL,
     estado VARCHAR(20) DEFAULT 'Pendiente' CHECK (
-        estado IN ('Pendiente', 'En Revision', 'Respondida', 'Cancelada')
+        estado IN ('Pendiente', 'En Revision', 'Respondida', 'Cancelada', 'Finalizada')
     ),
     id_medico INT NOT NULL,
     id_paciente INT NOT NULL,
